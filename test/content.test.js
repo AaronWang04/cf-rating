@@ -100,7 +100,7 @@ class FakeElement {
   }
 }
 
-test("inserts a native-style rating box immediately after Problem tags", async () => {
+test("independently toggles rating and tags in a native-style box", async () => {
   const sidebar = new FakeElement("div");
   sidebar.id = "sidebar";
 
@@ -122,11 +122,17 @@ test("inserts a native-style rating box immediately after Problem tags", async (
   const cache = {
     version: core.CACHE_VERSION,
     storedAt: Date.now(),
-    ratings: { "4:A": 800 }
+    problems: {
+      "4:A": {
+        rating: 800,
+        tags: ["brute force", "math"]
+      }
+    }
   };
   const stored = {
     codeforcesDarkModeEnabled: false,
-    codeforcesProblemRatings: cache,
+    codeforcesProblemMetadata: cache,
+    codeforcesProblemTagsEnabled: true,
     codeforcesRatingEnabled: true
   };
   const changeListeners = new Set();
@@ -190,13 +196,35 @@ test("inserts a native-style rating box immediately after Problem tags", async (
   const ratingBox = sidebar.children[1];
   assert.equal(ratingBox.id, "cf-problem-rating");
   assert.equal(ratingBox.className, "roundbox sidebox");
-  assert.match(ratingBox.querySelector(".caption").textContent, /Problem rating/);
-  assert.equal(ratingBox.querySelector(".tag-box").textContent, "*800");
+  assert.match(ratingBox.querySelector(".caption").textContent, /Problem info/);
+  assert.deepEqual(
+    ratingBox.querySelectorAll(".tag-box").map((element) => element.textContent),
+    ["*800", "brute force", "math"]
+  );
 
   for (const listener of changeListeners) {
     listener(
       {
         codeforcesRatingEnabled: {
+          oldValue: true,
+          newValue: false
+        }
+      },
+      "local"
+    );
+  }
+  await new Promise((resolve) => setImmediate(resolve));
+  const tagsOnlyBox = sidebar.querySelector("#cf-problem-rating");
+  assert.match(tagsOnlyBox.querySelector(".caption").textContent, /Problem tags/);
+  assert.deepEqual(
+    tagsOnlyBox.querySelectorAll(".tag-box").map((element) => element.textContent),
+    ["brute force", "math"]
+  );
+
+  for (const listener of changeListeners) {
+    listener(
+      {
+        codeforcesProblemTagsEnabled: {
           oldValue: true,
           newValue: false
         }

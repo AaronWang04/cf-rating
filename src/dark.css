@@ -128,6 +128,10 @@ html.cf-dark-mode div.setting-name {
   color: var(--cf-dark-accent) !important;
 }
 
+html.cf-dark-mode .caption.titled {
+  border-bottom-color: var(--cf-dark-border) !important;
+}
+
 html.cf-dark-mode .notice,
 html.cf-dark-mode .info,
 html.cf-dark-mode .right-meta,
@@ -197,6 +201,14 @@ html.cf-dark-mode .bordertable {
   background-color: var(--cf-dark-border) !important;
   border-color: var(--cf-dark-border) !important;
   color: var(--cf-dark-text) !important;
+}
+
+/* Datatables put their caption in the fifth direct div, after four legacy
+   image-based corner elements. Give it the same surface as the table header. */
+html.cf-dark-mode .datatable > div:nth-of-type(5) {
+  background: var(--cf-dark-surface-raised) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-heading) !important;
 }
 
 html.cf-dark-mode .datatable th,
@@ -289,6 +301,14 @@ html.cf-dark-mode #comment {
   color: var(--cf-dark-text) !important;
 }
 
+html.cf-dark-mode input,
+html.cf-dark-mode textarea,
+html.cf-dark-mode select,
+html.cf-dark-mode button {
+  color-scheme: dark;
+  accent-color: var(--cf-dark-accent);
+}
+
 html.cf-dark-mode input::placeholder,
 html.cf-dark-mode textarea::placeholder {
   color: var(--cf-dark-text-muted) !important;
@@ -298,6 +318,56 @@ html.cf-dark-mode button:hover,
 html.cf-dark-mode input[type="button"]:hover,
 html.cf-dark-mode input[type="submit"]:hover {
   background: var(--cf-dark-surface-hover) !important;
+}
+
+/* The contests filter replaces its native selects with SumoSelect markup.
+   Styling only select leaves the visible controls and their menus white. */
+html.cf-dark-mode .SumoSelect > .CaptionCont.SelectBox,
+html.cf-dark-mode .SumoSelect.open > .CaptionCont.SelectBox {
+  background: var(--cf-dark-surface-raised) !important;
+  border-color: var(--cf-dark-border) !important;
+  box-shadow: none !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode .SumoSelect > .CaptionCont.SelectBox > span,
+html.cf-dark-mode .SumoSelect > .CaptionCont.SelectBox > span.placeholder {
+  color: var(--cf-dark-text) !important;
+  opacity: 1 !important;
+}
+
+html.cf-dark-mode .SumoSelect > .CaptionCont.SelectBox > label > i {
+  border-top-color: var(--cf-dark-text-muted) !important;
+}
+
+html.cf-dark-mode .SumoSelect > .optWrapper,
+html.cf-dark-mode .SumoSelect > .optWrapper > .options {
+  background: var(--cf-dark-surface-raised) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode .SumoSelect > .optWrapper {
+  box-shadow: 0 10px 24px rgb(0 0 0 / 45%) !important;
+}
+
+html.cf-dark-mode .SumoSelect > .optWrapper > .options li.opt,
+html.cf-dark-mode .SumoSelect > .optWrapper > .options li.opt label,
+html.cf-dark-mode .SumoSelect > .optWrapper > .options li.opt span {
+  background: transparent !important;
+  border-color: var(--cf-dark-border-soft) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode .SumoSelect > .optWrapper > .options li.opt:hover,
+html.cf-dark-mode .SumoSelect > .optWrapper > .options li.opt.selected {
+  background: var(--cf-dark-surface-hover) !important;
+}
+
+html.cf-dark-mode .SumoSelect:focus > .CaptionCont.SelectBox,
+html.cf-dark-mode .SumoSelect:hover > .CaptionCont.SelectBox,
+html.cf-dark-mode .SumoSelect.open > .CaptionCont.SelectBox {
+  border-color: var(--cf-dark-accent) !important;
 }
 
 html.cf-dark-mode .input,
@@ -501,7 +571,7 @@ html.cf-dark-mode .verdict-failed {
   color: var(--cf-dark-danger) !important;
 }
 
-html.cf-dark-mode #cf-problem-rating .cf-rating-pill,
+html.cf-dark-mode #cf-problem-rating .cf-metadata-pill,
 html.cf-dark-mode .tag-box {
   background-color: var(--cf-dark-surface-raised) !important;
   color: var(--cf-dark-text) !important;
@@ -555,6 +625,21 @@ html.cf-dark-mode a.user-gray {
   color: #a9afb9 !important;
 }
 
+html.cf-dark-mode a.red-link:link,
+html.cf-dark-mode a.red-link:visited {
+  background: #592329 !important;
+  border: 1px solid #8b3a43 !important;
+  border-radius: 3px;
+  color: #ffd6d9 !important;
+  padding: 1px 4px;
+}
+
+html.cf-dark-mode a.red-link:hover,
+html.cf-dark-mode a.red-link:focus {
+  background: #713039 !important;
+  color: #fff !important;
+}
+
 html.cf-dark-mode img[src*="codeforces.com"] {
   background-color: transparent !important;
 }
@@ -562,6 +647,6 @@ html.cf-dark-mode img[src*="codeforces.com"] {
 html.cf-dark-mode #header > div:first-child img,
 html.cf-dark-mode ._logo_div img,
 html.cf-dark-mode .sidebox img[alt="Logo"] {
-  background-color: #fff !important;
-  border-radius: 3px;
+  background-color: transparent !important;
+  filter: invert(1) hue-rotate(180deg);
 }

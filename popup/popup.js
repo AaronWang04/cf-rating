@@ -3,11 +3,19 @@
 
   const settings = globalThis.CodeforcesFeatureSettings;
   const ratingToggle = document.querySelector("#rating-toggle");
+  const tagsToggle = document.querySelector("#tags-toggle");
   const darkModeToggle = document.querySelector("#dark-mode-toggle");
   const oledModeToggle = document.querySelector("#oled-mode-toggle");
   const status = document.querySelector("#status");
 
-  if (!settings || !ratingToggle || !darkModeToggle || !oledModeToggle || !status) {
+  if (
+    !settings ||
+    !ratingToggle ||
+    !tagsToggle ||
+    !darkModeToggle ||
+    !oledModeToggle ||
+    !status
+  ) {
     return;
   }
 
@@ -15,6 +23,10 @@
     {
       element: ratingToggle,
       feature: "ratingEnabled"
+    },
+    {
+      element: tagsToggle,
+      feature: "tagsEnabled"
     },
     {
       element: darkModeToggle,

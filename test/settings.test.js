@@ -8,18 +8,21 @@ test("uses backward-compatible feature defaults", () => {
   assert.deepEqual(settings.normalize(), {
     darkModeEnabled: false,
     oledModeEnabled: false,
-    ratingEnabled: true
+    ratingEnabled: true,
+    tagsEnabled: false
   });
   assert.deepEqual(
     settings.normalize({
       codeforcesDarkModeEnabled: true,
       codeforcesOledModeEnabled: true,
-      codeforcesRatingEnabled: false
+      codeforcesRatingEnabled: false,
+      codeforcesProblemTagsEnabled: true
     }),
     {
       darkModeEnabled: true,
       oledModeEnabled: true,
-      ratingEnabled: false
+      ratingEnabled: false,
+      tagsEnabled: true
     }
   );
 });
@@ -29,7 +32,8 @@ test("reads, writes, and publishes feature setting changes", async (context) => 
   const stored = {
     codeforcesDarkModeEnabled: true,
     codeforcesOledModeEnabled: false,
-    codeforcesRatingEnabled: true
+    codeforcesRatingEnabled: true,
+    codeforcesProblemTagsEnabled: false
   };
   const listeners = new Set();
 
@@ -68,7 +72,8 @@ test("reads, writes, and publishes feature setting changes", async (context) => 
   assert.deepEqual(await settings.read(), {
     darkModeEnabled: true,
     oledModeEnabled: false,
-    ratingEnabled: true
+    ratingEnabled: true,
+    tagsEnabled: false
   });
 
   await settings.setMany({

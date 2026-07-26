@@ -9,7 +9,7 @@
 })(typeof globalThis === "undefined" ? this : globalThis, function createApi() {
   "use strict";
 
-  const CACHE_VERSION = 1;
+  const CACHE_VERSION = 2;
   const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
   function parseProblemUrl(input) {
@@ -44,7 +44,7 @@
     return `${contestId}:${String(index).toUpperCase()}`;
   }
 
-  function buildRatingIndex(payload) {
+  function getProblems(payload) {
     if (
       !payload ||
       payload.status !== "OK" ||
@@ -58,9 +58,33 @@
       throw new Error(message);
     }
 
+    return payload.result.problems;
+  }
+
+  function buildProblemIndex(payload) {
+    const problems = Object.create(null);
+
+    for (const problem of getProblems(payload)) {
+      if (
+        Number.isInteger(problem.contestId) &&
+        typeof problem.index === "string"
+      ) {
+        problems[problemKey(problem.contestId, problem.index)] = {
+          rating: Number.isInteger(problem.rating) ? problem.rating : null,
+          tags: Array.isArray(problem.tags)
+            ? problem.tags.filter((tag) => typeof tag === "string")
+            : []
+        };
+      }
+    }
+
+    return problems;
+  }
+
+  function buildRatingIndex(payload) {
     const ratings = Object.create(null);
 
-    for (const problem of payload.result.problems) {
+    for (const problem of getProblems(payload)) {
       if (
         Number.isInteger(problem.contestId) &&
         typeof problem.index === "string" &&
@@ -71,6 +95,24 @@
     }
 
     return ratings;
+  }
+
+  function findProblemMetadata(problems, problem) {
+    if (!problems || !problem) {
+      return { rating: null, tags: [] };
+    }
+
+    const metadata = problems[problemKey(problem.contestId, problem.index)];
+    if (!metadata || typeof metadata !== "object") {
+      return { rating: null, tags: [] };
+    }
+
+    return {
+      rating: Number.isInteger(metadata.rating) ? metadata.rating : null,
+      tags: Array.isArray(metadata.tags)
+        ? metadata.tags.filter((tag) => typeof tag === "string")
+        : []
+    };
   }
 
   function findRating(ratings, problem) {
@@ -87,8 +129,8 @@
       cache &&
         cache.version === CACHE_VERSION &&
         Number.isFinite(cache.storedAt) &&
-        cache.ratings &&
-        typeof cache.ratings === "object"
+        cache.problems &&
+        typeof cache.problems === "object"
     );
   }
 
@@ -103,7 +145,9 @@
   return Object.freeze({
     CACHE_TTL_MS,
     CACHE_VERSION,
+    buildProblemIndex,
     buildRatingIndex,
+    findProblemMetadata,
     findRating,
     isFreshCache,
     isUsableCache,

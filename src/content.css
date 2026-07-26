@@ -1,21 +1,23 @@
-#cf-problem-rating .cf-rating-content {
+#cf-problem-rating .cf-metadata-content {
   min-height: 1.7em;
   overflow: hidden;
   padding: 0.5em;
 }
 
-#cf-problem-rating .cf-rating-pill {
+#cf-problem-rating .cf-metadata-pill {
   background-color: #f0f0f0;
   float: left;
   margin: 2px;
   padding: 0 3px 2px;
 }
 
-#cf-problem-rating .cf-rating-pill .tag-box {
+#cf-problem-rating .cf-metadata-pill .tag-box {
   font-size: 1.2rem;
 }
 
 #cf-problem-rating .cf-rating-status {
   color: #777;
+  display: block;
   font-size: 0.8em;
+  margin: 2px;
 }

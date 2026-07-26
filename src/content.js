@@ -1,9 +1,9 @@
-(function showCodeforcesProblemRating() {
+(function showCodeforcesProblemMetadata() {
   "use strict";
 
   const core = globalThis.CodeforcesRating;
   const settings = globalThis.CodeforcesFeatureSettings;
-  const CACHE_KEY = "codeforcesProblemRatings";
+  const CACHE_KEY = "codeforcesProblemMetadata";
   const BOX_ID = "cf-problem-rating";
 
   if (!core || !settings) {
@@ -12,38 +12,51 @@
 
   const problem = core.parseProblemUrl(window.location.href);
   let renderGeneration = 0;
-  let ratingIsEnabled = null;
+  let featureState = {
+    ratingEnabled: null,
+    tagsEnabled: null
+  };
 
   if (!problem) {
     return;
   }
 
-  void settings.read().then(({ ratingEnabled }) => {
-    setRatingEnabled(ratingEnabled);
-  });
+  void settings.read().then(applyFeatureSettings);
 
-  settings.subscribe(({ ratingEnabled }) => {
-    if (typeof ratingEnabled === "boolean") {
-      setRatingEnabled(ratingEnabled);
+  settings.subscribe((changed) => {
+    if (
+      typeof changed.ratingEnabled === "boolean" ||
+      typeof changed.tagsEnabled === "boolean"
+    ) {
+      applyFeatureSettings(changed);
     }
   });
 
-  function setRatingEnabled(enabled) {
-    if (enabled === ratingIsEnabled) {
+  function applyFeatureSettings(changed) {
+    const nextState = {
+      ratingEnabled:
+        typeof changed.ratingEnabled === "boolean"
+          ? changed.ratingEnabled
+          : featureState.ratingEnabled,
+      tagsEnabled:
+        typeof changed.tagsEnabled === "boolean"
+          ? changed.tagsEnabled
+          : featureState.tagsEnabled
+    };
+
+    if (
+      nextState.ratingEnabled === featureState.ratingEnabled &&
+      nextState.tagsEnabled === featureState.tagsEnabled
+    ) {
       return;
     }
 
-    ratingIsEnabled = enabled;
+    featureState = nextState;
     renderGeneration += 1;
     const generation = renderGeneration;
-    const existingBox = document.getElementById(BOX_ID);
+    document.getElementById(BOX_ID)?.remove();
 
-    if (!enabled) {
-      existingBox?.remove();
-      return;
-    }
-
-    if (existingBox) {
+    if (!featureState.ratingEnabled && !featureState.tagsEnabled) {
       return;
     }
 
@@ -52,37 +65,33 @@
       return;
     }
 
-    const view = createRatingBox(sidebar);
-    void loadRating(problem)
-      .then((rating) => {
+    const view = createMetadataBox(sidebar, featureState);
+    void loadProblemMetadata(problem)
+      .then((metadata) => {
         if (generation !== renderGeneration || !document.getElementById(BOX_ID)) {
           return;
         }
 
-        if (rating === null) {
-          view.showMessage("Not rated", "No rating is available for this problem.");
-        } else {
-          view.showRating(rating);
-        }
+        view.showMetadata(metadata);
       })
       .catch((error) => {
         if (generation !== renderGeneration || !document.getElementById(BOX_ID)) {
           return;
         }
 
-        console.warn("Codeforces Problem Rating:", error);
+        console.warn("Codeforces Problem Metadata:", error);
         view.showMessage(
-          "Rating unavailable",
+          "Problem metadata unavailable",
           "The Codeforces API could not be reached. Reload the page to try again."
         );
       });
   }
 
-  async function loadRating(targetProblem) {
+  async function loadProblemMetadata(targetProblem) {
     const cached = await readCache();
 
     if (core.isFreshCache(cached)) {
-      return core.findRating(cached.ratings, targetProblem);
+      return core.findProblemMetadata(cached.problems, targetProblem);
     }
 
     try {
@@ -99,18 +108,18 @@
       }
 
       const payload = await response.json();
-      const ratings = core.buildRatingIndex(payload);
+      const problems = core.buildProblemIndex(payload);
       const nextCache = {
         version: core.CACHE_VERSION,
         storedAt: Date.now(),
-        ratings
+        problems
       };
 
       await writeCache(nextCache);
-      return core.findRating(ratings, targetProblem);
+      return core.findProblemMetadata(problems, targetProblem);
     } catch (error) {
       if (core.isUsableCache(cached)) {
-        return core.findRating(cached.ratings, targetProblem);
+        return core.findProblemMetadata(cached.problems, targetProblem);
       }
 
       throw error;
@@ -147,14 +156,14 @@
       }
 
       storage.set({ [CACHE_KEY]: cache }, () => {
-        // A storage failure should not prevent displaying the rating we fetched.
+        // A storage failure should not prevent displaying fetched metadata.
         void globalThis.chrome?.runtime?.lastError;
         resolve();
       });
     });
   }
 
-  function createRatingBox(sidebarElement) {
+  function createMetadataBox(sidebarElement, enabledFeatures) {
     const box = document.createElement("div");
     box.id = BOX_ID;
     box.className = "roundbox sidebox";
@@ -162,14 +171,14 @@
 
     const caption = document.createElement("div");
     caption.className = "caption titled";
-    caption.append("→ Problem rating");
+    caption.append(`→ ${getCaption(enabledFeatures)}`);
 
     const topLinks = document.createElement("div");
     topLinks.className = "top-links";
     caption.append(topLinks);
 
     const content = document.createElement("div");
-    content.className = "cf-rating-content";
+    content.className = "cf-metadata-content";
 
     const status = document.createElement("span");
     status.className = "cf-rating-status";
@@ -187,33 +196,71 @@
     return {
       showMessage(message, title) {
         content.replaceChildren();
-        const messageElement = document.createElement("span");
-        messageElement.className = "cf-rating-status";
-        messageElement.textContent = message;
-        messageElement.title = title;
-        content.append(messageElement);
+        content.append(createMessage(message, title));
       },
 
-      showRating(rating) {
+      showMetadata(metadata) {
         content.replaceChildren();
 
-        const pill = document.createElement("div");
-        pill.className = "roundbox cf-rating-pill";
-        pill.append(
-          createCorner("roundbox-lt"),
-          createCorner("roundbox-rt"),
-          createCorner("roundbox-lb"),
-          createCorner("roundbox-rb")
-        );
+        if (enabledFeatures.ratingEnabled) {
+          if (metadata.rating === null) {
+            content.append(
+              createMessage("Not rated", "No rating is available for this problem.")
+            );
+          } else {
+            content.append(createPill(`*${metadata.rating}`, "Problem rating"));
+          }
+        }
 
-        const value = document.createElement("span");
-        value.className = "tag-box";
-        value.title = "Problem rating";
-        value.textContent = `*${rating}`;
-        pill.append(value);
-        content.append(pill);
+        if (enabledFeatures.tagsEnabled) {
+          if (metadata.tags.length === 0) {
+            content.append(
+              createMessage(
+                "No tags available",
+                "No tags are available for this problem."
+              )
+            );
+          } else {
+            for (const tag of metadata.tags) {
+              content.append(createPill(tag, "Problem tag"));
+            }
+          }
+        }
       }
     };
+  }
+
+  function getCaption(enabledFeatures) {
+    if (enabledFeatures.ratingEnabled && enabledFeatures.tagsEnabled) {
+      return "Problem info";
+    }
+    return enabledFeatures.tagsEnabled ? "Problem tags" : "Problem rating";
+  }
+
+  function createPill(text, title) {
+    const pill = document.createElement("div");
+    pill.className = "roundbox cf-metadata-pill";
+    pill.append(
+      createCorner("roundbox-lt"),
+      createCorner("roundbox-rt"),
+      createCorner("roundbox-lb"),
+      createCorner("roundbox-rb")
+    );
+
+    const value = document.createElement("span");
+    value.className = "tag-box";
+    value.title = title;
+    value.textContent = text;
+    pill.append(value);
+    return pill;
+  }
+
+  function createMessage(message, title) {
+    const messageElement = document.createElement("span");
+    messageElement.className = "cf-rating-status";
+    messageElement.textContent = message;
+    messageElement.title = title;
+    return messageElement;
   }
 
   function createCorner(className) {

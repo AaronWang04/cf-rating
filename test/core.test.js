@@ -45,6 +45,38 @@ test("indexes ratings by contest id and problem index", () => {
   assert.equal(core.findRating(ratings, { contestId: 4, index: "B" }), null);
 });
 
+test("indexes rating and tags together as problem metadata", () => {
+  const problems = core.buildProblemIndex({
+    status: "OK",
+    result: {
+      problems: [
+        {
+          contestId: 4,
+          index: "A",
+          rating: 800,
+          tags: ["brute force", "math"]
+        },
+        { contestId: 4, index: "B", tags: ["implementation"] }
+      ]
+    }
+  });
+
+  assert.deepEqual(
+    core.findProblemMetadata(problems, { contestId: 4, index: "A" }),
+    {
+      rating: 800,
+      tags: ["brute force", "math"]
+    }
+  );
+  assert.deepEqual(
+    core.findProblemMetadata(problems, { contestId: 4, index: "B" }),
+    {
+      rating: null,
+      tags: ["implementation"]
+    }
+  );
+});
+
 test("rejects failed or malformed API responses", () => {
   assert.throws(
     () => core.buildRatingIndex({ status: "FAILED", comment: "Call limit exceeded" }),
@@ -61,7 +93,12 @@ test("validates cache version and expiration", () => {
   const fresh = {
     version: core.CACHE_VERSION,
     storedAt: now - core.CACHE_TTL_MS + 1,
-    ratings: { "4:A": 800 }
+    problems: {
+      "4:A": {
+        rating: 800,
+        tags: ["math"]
+      }
+    }
   };
 
   assert.equal(core.isUsableCache(fresh), true);

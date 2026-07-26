@@ -27,6 +27,7 @@ test("popup only loads packaged scripts", () => {
   );
 
   assert.match(popup, /id="rating-toggle"/);
+  assert.match(popup, /id="tags-toggle"/);
   assert.match(popup, /id="dark-mode-toggle"/);
   assert.match(popup, /id="oled-mode-toggle"/);
   assert.doesNotMatch(popup, /<script[^>]+src=["']https?:/i);
@@ -71,4 +72,17 @@ test("dark theme replaces Codeforces lava-menu images", () => {
   assert.match(darkTheme, /li\.backLava > div/);
   assert.match(darkTheme, /background-image: none !important/);
   assert.match(darkTheme, /li\.selectedLava > a:visited/);
+});
+
+test("dark theme covers contests-page custom controls and branding", () => {
+  const darkTheme = fs.readFileSync(
+    path.join(__dirname, "../src/dark.css"),
+    "utf8"
+  );
+
+  assert.match(darkTheme, /\.SumoSelect > \.CaptionCont\.SelectBox/);
+  assert.match(darkTheme, /\.SumoSelect > \.optWrapper/);
+  assert.match(darkTheme, /\.datatable > div:nth-of-type\(5\)/);
+  assert.match(darkTheme, /a\.red-link:link/);
+  assert.match(darkTheme, /filter: invert\(1\) hue-rotate\(180deg\)/);
 });

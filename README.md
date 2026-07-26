@@ -1,10 +1,12 @@
 # Codeforces Rating & Dark Mode
 
-A small Chrome and Firefox extension with two independently configurable
+A small Chrome and Firefox extension with four configurable
 Codeforces features:
 
 - **Problem rating** shows a problem's rating in its own sidebar box without
   revealing the problem tags.
+- **Problem tags** optionally shows the tags returned by the same Codeforces API
+  response used for rating.
 - **Dark mode** applies a low-glare theme across Codeforces, including problem
   statements, tables, forms, dialogs, samples, and syntax-highlighted code.
 - **OLED mode** changes the dark theme to true-black backgrounds for OLED
@@ -12,9 +14,10 @@ Codeforces features:
 
 It uses the official
 [`problemset.problems`](https://codeforces.com/apiHelp/methods#problemset.problems)
-API and looks up each problem by its `contestId` and `index`. The rating index is
-cached locally for six hours, which avoids repeatedly downloading the complete
-problemset and stays comfortably within Codeforces' API rate limit.
+API and looks up each problem by its `contestId` and `index`. The rating and tag
+metadata is cached locally for six hours, which avoids repeatedly downloading
+the complete problemset and stays comfortably within Codeforces' API rate
+limit.
 
 ## Install in Chrome or Chromium
 
@@ -34,13 +37,13 @@ Firefox removes temporarily loaded extensions when the browser restarts.
 Permanent installation requires packaging and signing the extension through
 Mozilla Add-ons.
 
-Click the extension's toolbar button to control **Problem rating**, **Dark
-mode**, and **OLED mode**. Changes are saved locally and apply immediately to
-open Codeforces tabs. OLED mode enables dark mode automatically; disabling dark
-mode also disables OLED mode.
+Click the extension's toolbar button to control **Problem rating**, **Problem
+tags**, **Dark mode**, and **OLED mode**. Changes are saved locally and apply
+immediately to open Codeforces tabs. OLED mode enables dark mode automatically;
+disabling dark mode also disables OLED mode.
 
 Problem rating is on by default to preserve the extension's existing behavior;
-dark mode and OLED mode are off by default. On a URL such as
+problem tags, dark mode, and OLED mode are off by default. On a URL such as
 `https://codeforces.com/problemset/problem/4/A`, the rating box appears
 immediately after Codeforces' **Problem tags** box. If the API does not provide
 a rating for that problem, the box says **Not rated**.

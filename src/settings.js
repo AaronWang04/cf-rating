@@ -12,12 +12,14 @@
   const STORAGE_KEYS = Object.freeze({
     darkModeEnabled: "codeforcesDarkModeEnabled",
     oledModeEnabled: "codeforcesOledModeEnabled",
-    ratingEnabled: "codeforcesRatingEnabled"
+    ratingEnabled: "codeforcesRatingEnabled",
+    tagsEnabled: "codeforcesProblemTagsEnabled"
   });
   const DEFAULTS = Object.freeze({
     darkModeEnabled: false,
     oledModeEnabled: false,
-    ratingEnabled: true
+    ratingEnabled: true,
+    tagsEnabled: false
   });
 
   function normalize(stored = {}) {
@@ -33,7 +35,11 @@
       ratingEnabled:
         typeof stored[STORAGE_KEYS.ratingEnabled] === "boolean"
           ? stored[STORAGE_KEYS.ratingEnabled]
-          : DEFAULTS.ratingEnabled
+          : DEFAULTS.ratingEnabled,
+      tagsEnabled:
+        typeof stored[STORAGE_KEYS.tagsEnabled] === "boolean"
+          ? stored[STORAGE_KEYS.tagsEnabled]
+          : DEFAULTS.tagsEnabled
     };
   }
 
