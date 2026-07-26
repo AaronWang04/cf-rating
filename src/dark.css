@@ -19,6 +19,14 @@ html.cf-dark-mode {
   --cf-dark-link-visited: #b49cff;
   --cf-dark-accent: #83a9f8;
   --cf-dark-code: #14161a;
+  --cf-dark-code-border: #303641;
+  --cf-dark-code-comment: #7fb069;
+  --cf-dark-code-keyword: #d49adf;
+  --cf-dark-code-literal: #b5cea8;
+  --cf-dark-code-name: #82d2ce;
+  --cf-dark-code-number: #b5cea8;
+  --cf-dark-code-string: #e8a87c;
+  --cf-dark-code-text: #d9dee7;
   --cf-dark-success: #76d48b;
   --cf-dark-danger: #ff7b82;
 }
@@ -31,6 +39,7 @@ html.cf-dark-mode.cf-oled-mode {
   --cf-dark-border: #292929;
   --cf-dark-border-soft: #1f1f1f;
   --cf-dark-code: #000;
+  --cf-dark-code-border: #242424;
 }
 
 html.cf-dark-mode body:not(.wysiwyg),
@@ -209,6 +218,40 @@ html.cf-dark-mode .datatable > div.dark {
   background: var(--cf-dark-surface-raised) !important;
 }
 
+/* Compact sidebar ranking tables use .rtable instead of .datatable and mark
+   alternating cells with .dark. Codeforces gives those cells a light fill. */
+html.cf-dark-mode table.rtable,
+html.cf-dark-mode .rtable {
+  background: var(--cf-dark-border) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode table.rtable th,
+html.cf-dark-mode .rtable th {
+  background: var(--cf-dark-surface-raised) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-heading) !important;
+}
+
+html.cf-dark-mode table.rtable td,
+html.cf-dark-mode .rtable td {
+  background: var(--cf-dark-surface) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode table.rtable td.dark,
+html.cf-dark-mode .rtable td.dark {
+  background: var(--cf-dark-surface-raised) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode table.rtable tr:hover td,
+html.cf-dark-mode .rtable tr:hover td {
+  background: var(--cf-dark-surface-hover) !important;
+}
+
 html.cf-dark-mode input,
 html.cf-dark-mode textarea,
 html.cf-dark-mode select,
@@ -243,8 +286,8 @@ html.cf-dark-mode textarea[name="input"],
 html.cf-dark-mode textarea[name="output"],
 html.cf-dark-mode #sourceCodeTextarea {
   background: var(--cf-dark-code) !important;
-  border-color: var(--cf-dark-border) !important;
-  color: #e6e9ef !important;
+  border-color: var(--cf-dark-code-border) !important;
+  color: var(--cf-dark-code-text) !important;
 }
 
 html.cf-dark-mode .input pre,
@@ -255,7 +298,125 @@ html.cf-dark-mode pre.answer,
 html.cf-dark-mode pre.checker,
 html.cf-dark-mode pre.diagnostics {
   background: transparent !important;
-  color: #e6e9ef !important;
+  color: var(--cf-dark-code-text) !important;
+}
+
+/* Codeforces uses Google Code Prettify for viewed submissions. Its default
+   token colors assume a white background, so every token needs a dark variant. */
+html.cf-dark-mode .prettyprint .pln,
+html.cf-dark-mode .prettyprint .pun {
+  color: var(--cf-dark-code-text) !important;
+}
+
+html.cf-dark-mode .prettyprint .str,
+html.cf-dark-mode .prettyprint .atv {
+  color: var(--cf-dark-code-string) !important;
+}
+
+html.cf-dark-mode .prettyprint .kwd,
+html.cf-dark-mode .prettyprint .tag {
+  color: var(--cf-dark-code-keyword) !important;
+}
+
+html.cf-dark-mode .prettyprint .com {
+  color: var(--cf-dark-code-comment) !important;
+  font-style: italic;
+}
+
+html.cf-dark-mode .prettyprint .typ,
+html.cf-dark-mode .prettyprint .atn,
+html.cf-dark-mode .prettyprint .dec {
+  color: var(--cf-dark-code-name) !important;
+}
+
+html.cf-dark-mode .prettyprint .lit {
+  color: var(--cf-dark-code-literal) !important;
+}
+
+html.cf-dark-mode .prettyprint ol.linenums,
+html.cf-dark-mode ol.linenums {
+  background: var(--cf-dark-code) !important;
+  color: #737b8c !important;
+}
+
+html.cf-dark-mode .prettyprint ol.linenums li,
+html.cf-dark-mode ol.linenums li,
+html.cf-dark-mode ol.linenums li.L0,
+html.cf-dark-mode ol.linenums li.L1,
+html.cf-dark-mode ol.linenums li.L2,
+html.cf-dark-mode ol.linenums li.L3,
+html.cf-dark-mode ol.linenums li.L4,
+html.cf-dark-mode ol.linenums li.L5,
+html.cf-dark-mode ol.linenums li.L6,
+html.cf-dark-mode ol.linenums li.L7,
+html.cf-dark-mode ol.linenums li.L8,
+html.cf-dark-mode ol.linenums li.L9 {
+  background: transparent !important;
+  border-left-color: var(--cf-dark-code-border) !important;
+}
+
+/* The submit page embeds Ace with its light "chrome" theme. These overrides
+   preserve Ace's token structure without downloading another editor theme. */
+html.cf-dark-mode .ace-chrome {
+  background: var(--cf-dark-code) !important;
+  color: var(--cf-dark-code-text) !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_gutter {
+  background: #1b1e24 !important;
+  color: #737b8c !important;
+}
+
+html.cf-dark-mode.cf-oled-mode .ace-chrome .ace_gutter {
+  background: #080808 !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_print-margin {
+  background: var(--cf-dark-code-border) !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_cursor {
+  color: #f8f8f2 !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_marker-layer .ace_active-line,
+html.cf-dark-mode .ace-chrome .ace_gutter-active-line {
+  background: rgb(255 255 255 / 6%) !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_marker-layer .ace_selection {
+  background: #264f78 !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_comment {
+  color: var(--cf-dark-code-comment) !important;
+  font-style: italic;
+}
+
+html.cf-dark-mode .ace-chrome .ace_keyword,
+html.cf-dark-mode .ace-chrome .ace_meta,
+html.cf-dark-mode .ace-chrome .ace_storage {
+  color: var(--cf-dark-code-keyword) !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_string {
+  color: var(--cf-dark-code-string) !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_constant,
+html.cf-dark-mode .ace-chrome .ace_constant.ace_numeric {
+  color: var(--cf-dark-code-number) !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_support,
+html.cf-dark-mode .ace-chrome .ace_entity.ace_name.ace_function,
+html.cf-dark-mode .ace-chrome .ace_variable {
+  color: var(--cf-dark-code-name) !important;
+}
+
+html.cf-dark-mode .ace-chrome .ace_invalid {
+  background: #7f1d1d !important;
+  color: #fff !important;
 }
 
 html.cf-dark-mode .problem-statement .test-example-line,
@@ -324,6 +485,7 @@ html.cf-dark-mode .tag-box {
 
 html.cf-dark-mode span.user-legendary::first-letter,
 html.cf-dark-mode a.user-legendary::first-letter,
+html.cf-dark-mode .user-legendary .legendary-user-first-letter,
 html.cf-dark-mode span.user-admin,
 html.cf-dark-mode a.user-admin,
 html.cf-dark-mode span.user-black,

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Codeforces Rating & Dark Mode",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Adds optional problem ratings plus dark and OLED themes to Codeforces.",
   "permissions": [
     "storage"

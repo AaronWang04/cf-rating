@@ -6,7 +6,7 @@ Codeforces features:
 - **Problem rating** shows a problem's rating in its own sidebar box without
   revealing the problem tags.
 - **Dark mode** applies a low-glare theme across Codeforces, including problem
-  statements, tables, forms, dialogs, samples, and code blocks.
+  statements, tables, forms, dialogs, samples, and syntax-highlighted code.
 - **OLED mode** changes the dark theme to true-black backgrounds for OLED
   displays.
 

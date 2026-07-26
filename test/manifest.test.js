@@ -31,3 +31,32 @@ test("popup only loads packaged scripts", () => {
   assert.match(popup, /id="oled-mode-toggle"/);
   assert.doesNotMatch(popup, /<script[^>]+src=["']https?:/i);
 });
+
+test("dark theme defines Codeforces syntax highlighting palettes", () => {
+  const darkTheme = fs.readFileSync(
+    path.join(__dirname, "../src/dark.css"),
+    "utf8"
+  );
+
+  for (const selector of [
+    ".prettyprint .kwd",
+    ".prettyprint .str",
+    ".prettyprint .com",
+    ".prettyprint ol.linenums li",
+    ".ace-chrome .ace_keyword",
+    ".ace-chrome .ace_string",
+    ".ace-chrome .ace_marker-layer .ace_selection"
+  ]) {
+    assert.match(darkTheme, new RegExp(selector.replaceAll(".", "\\.")));
+  }
+});
+
+test("dark theme covers compact ranking tables and legendary handles", () => {
+  const darkTheme = fs.readFileSync(
+    path.join(__dirname, "../src/dark.css"),
+    "utf8"
+  );
+
+  assert.match(darkTheme, /table\.rtable td\.dark/);
+  assert.match(darkTheme, /\.user-legendary \.legendary-user-first-letter/);
+});
