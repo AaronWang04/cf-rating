@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Codeforces Problem Rating",
+  "version": "1.0.0",
+  "description": "Shows a problem's Codeforces rating in the sidebar without revealing its tags.",
+  "permissions": [
+    "storage"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "cf-rating@aaronw.dev",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://codeforces.com/contest/*/problem/*",
+        "https://codeforces.com/problemset/problem/*/*"
+      ],
+      "js": [
+        "src/core.js",
+        "src/content.js"
+      ],
+      "css": [
+        "src/content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
