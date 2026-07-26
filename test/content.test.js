@@ -40,6 +40,16 @@ class FakeElement {
     this.append(...items);
   }
 
+  remove() {
+    if (!this.parentElement) {
+      return;
+    }
+
+    const siblings = this.parentElement.children;
+    siblings.splice(siblings.indexOf(this), 1);
+    this.parentElement = null;
+  }
+
   insertAdjacentElement(position, element) {
     assert.equal(position, "afterend");
     const siblings = this.parentElement.children;
@@ -114,22 +124,50 @@ test("inserts a native-style rating box immediately after Problem tags", async (
     storedAt: Date.now(),
     ratings: { "4:A": 800 }
   };
+  const stored = {
+    codeforcesDarkModeEnabled: false,
+    codeforcesProblemRatings: cache,
+    codeforcesRatingEnabled: true
+  };
+  const changeListeners = new Set();
   const chrome = {
     runtime: {},
     storage: {
       local: {
-        get(key, callback) {
-          callback({ [key]: cache });
+        get(keys, callback) {
+          const requested = Array.isArray(keys) ? keys : [keys];
+          callback(
+            Object.fromEntries(
+              requested
+                .filter((key) => Object.hasOwn(stored, key))
+                .map((key) => [key, stored[key]])
+            )
+          );
+        },
+        set(values, callback) {
+          Object.assign(stored, values);
+          callback?.();
+        }
+      },
+      onChanged: {
+        addListener(listener) {
+          changeListeners.add(listener);
+        },
+        removeListener(listener) {
+          changeListeners.delete(listener);
         }
       }
     }
   };
-  const source = fs.readFileSync(
+  const settingsSource = fs.readFileSync(
+    path.join(__dirname, "../src/settings.js"),
+    "utf8"
+  );
+  const contentSource = fs.readFileSync(
     path.join(__dirname, "../src/content.js"),
     "utf8"
   );
-
-  vm.runInNewContext(source, {
+  const context = vm.createContext({
     CodeforcesRating: core,
     URL,
     chrome,
@@ -142,6 +180,8 @@ test("inserts a native-style rating box immediately after Problem tags", async (
       }
     }
   });
+  vm.runInContext(settingsSource, context);
+  vm.runInContext(contentSource, context);
   await new Promise((resolve) => setImmediate(resolve));
 
   assert.equal(sidebar.children.length, 2);
@@ -152,4 +192,36 @@ test("inserts a native-style rating box immediately after Problem tags", async (
   assert.equal(ratingBox.className, "roundbox sidebox");
   assert.match(ratingBox.querySelector(".caption").textContent, /Problem rating/);
   assert.equal(ratingBox.querySelector(".tag-box").textContent, "*800");
+
+  for (const listener of changeListeners) {
+    listener(
+      {
+        codeforcesRatingEnabled: {
+          oldValue: true,
+          newValue: false
+        }
+      },
+      "local"
+    );
+  }
+  assert.equal(sidebar.querySelector("#cf-problem-rating"), null);
+
+  for (const listener of changeListeners) {
+    listener(
+      {
+        codeforcesRatingEnabled: {
+          oldValue: false,
+          newValue: true
+        }
+      },
+      "local"
+    );
+  }
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(
+    sidebar.querySelector("#cf-problem-rating .tag-box")?.textContent ??
+      sidebar.querySelector("#cf-problem-rating")?.querySelector(".tag-box")
+        ?.textContent,
+    "*800"
+  );
 });

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Codeforces features</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header class="popup-header">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <h1>Codeforces tools</h1>
+          <p>Choose what appears on Codeforces.</p>
+        </div>
+      </header>
+
+      <section class="feature-list" aria-label="Features">
+        <label class="feature" for="rating-toggle">
+          <span class="feature-copy">
+            <span class="feature-name">Problem rating</span>
+            <span class="feature-description">Show rating without revealing tags</span>
+          </span>
+          <input id="rating-toggle" type="checkbox" disabled>
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+
+        <label class="feature" for="dark-mode-toggle">
+          <span class="feature-copy">
+            <span class="feature-name">Dark mode</span>
+            <span class="feature-description">Use a low-glare Codeforces theme</span>
+          </span>
+          <input id="dark-mode-toggle" type="checkbox" disabled>
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+      </section>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </main>
+
+    <script src="../src/settings.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

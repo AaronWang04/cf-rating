@@ -1,0 +1,95 @@
+"use strict";
+
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const settings = require("../src/settings.js");
+
+test("uses backward-compatible feature defaults", () => {
+  assert.deepEqual(settings.normalize(), {
+    darkModeEnabled: false,
+    ratingEnabled: true
+  });
+  assert.deepEqual(
+    settings.normalize({
+      codeforcesDarkModeEnabled: true,
+      codeforcesRatingEnabled: false
+    }),
+    {
+      darkModeEnabled: true,
+      ratingEnabled: false
+    }
+  );
+});
+
+test("reads, writes, and publishes feature setting changes", async (context) => {
+  const originalChrome = globalThis.chrome;
+  const stored = {
+    codeforcesDarkModeEnabled: true,
+    codeforcesRatingEnabled: true
+  };
+  const listeners = new Set();
+
+  globalThis.chrome = {
+    runtime: {},
+    storage: {
+      local: {
+        get(keys, callback) {
+          callback(
+            Object.fromEntries(
+              keys
+                .filter((key) => Object.hasOwn(stored, key))
+                .map((key) => [key, stored[key]])
+            )
+          );
+        },
+        set(values, callback) {
+          Object.assign(stored, values);
+          callback();
+        }
+      },
+      onChanged: {
+        addListener(listener) {
+          listeners.add(listener);
+        },
+        removeListener(listener) {
+          listeners.delete(listener);
+        }
+      }
+    }
+  };
+  context.after(() => {
+    globalThis.chrome = originalChrome;
+  });
+
+  assert.deepEqual(await settings.read(), {
+    darkModeEnabled: true,
+    ratingEnabled: true
+  });
+
+  await settings.set("ratingEnabled", false);
+  assert.equal(stored.codeforcesRatingEnabled, false);
+
+  let received = null;
+  const unsubscribe = settings.subscribe((changed) => {
+    received = changed;
+  });
+  for (const listener of listeners) {
+    listener(
+      {
+        codeforcesDarkModeEnabled: {
+          oldValue: true,
+          newValue: false
+        }
+      },
+      "local"
+    );
+  }
+
+  assert.deepEqual(received, { darkModeEnabled: false });
+  unsubscribe();
+  assert.equal(listeners.size, 0);
+});
+
+test("rejects unknown feature names", async () => {
+  await assert.rejects(() => settings.set("unknownFeature", true), /Unknown feature/);
+});

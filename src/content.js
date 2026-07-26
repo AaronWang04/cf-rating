@@ -2,36 +2,81 @@
   "use strict";
 
   const core = globalThis.CodeforcesRating;
+  const settings = globalThis.CodeforcesFeatureSettings;
   const CACHE_KEY = "codeforcesProblemRatings";
   const BOX_ID = "cf-problem-rating";
 
-  if (!core) {
+  if (!core || !settings) {
     return;
   }
 
   const problem = core.parseProblemUrl(window.location.href);
-  const sidebar = document.querySelector("#sidebar");
+  let renderGeneration = 0;
+  let ratingIsEnabled = null;
 
-  if (!problem || !sidebar || document.getElementById(BOX_ID)) {
+  if (!problem) {
     return;
   }
 
-  const view = createRatingBox(sidebar);
-  void loadRating(problem)
-    .then((rating) => {
-      if (rating === null) {
-        view.showMessage("Not rated", "No rating is available for this problem.");
-      } else {
-        view.showRating(rating);
-      }
-    })
-    .catch((error) => {
-      console.warn("Codeforces Problem Rating:", error);
-      view.showMessage(
-        "Rating unavailable",
-        "The Codeforces API could not be reached. Reload the page to try again."
-      );
-    });
+  void settings.read().then(({ ratingEnabled }) => {
+    setRatingEnabled(ratingEnabled);
+  });
+
+  settings.subscribe(({ ratingEnabled }) => {
+    if (typeof ratingEnabled === "boolean") {
+      setRatingEnabled(ratingEnabled);
+    }
+  });
+
+  function setRatingEnabled(enabled) {
+    if (enabled === ratingIsEnabled) {
+      return;
+    }
+
+    ratingIsEnabled = enabled;
+    renderGeneration += 1;
+    const generation = renderGeneration;
+    const existingBox = document.getElementById(BOX_ID);
+
+    if (!enabled) {
+      existingBox?.remove();
+      return;
+    }
+
+    if (existingBox) {
+      return;
+    }
+
+    const sidebar = document.querySelector("#sidebar");
+    if (!sidebar) {
+      return;
+    }
+
+    const view = createRatingBox(sidebar);
+    void loadRating(problem)
+      .then((rating) => {
+        if (generation !== renderGeneration || !document.getElementById(BOX_ID)) {
+          return;
+        }
+
+        if (rating === null) {
+          view.showMessage("Not rated", "No rating is available for this problem.");
+        } else {
+          view.showRating(rating);
+        }
+      })
+      .catch((error) => {
+        if (generation !== renderGeneration || !document.getElementById(BOX_ID)) {
+          return;
+        }
+
+        console.warn("Codeforces Problem Rating:", error);
+        view.showMessage(
+          "Rating unavailable",
+          "The Codeforces API could not be reached. Reload the page to try again."
+        );
+      });
+  }
 
   async function loadRating(targetProblem) {
     const cached = await readCache();

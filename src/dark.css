@@ -1,0 +1,360 @@
+/*
+ * Dark theme selector coverage was informed by
+ * https://github.com/GaurangTandon/codeforces-darktheme.
+ * All rules are scoped so the feature can be removed without a page reload.
+ */
+
+html.cf-dark-mode {
+  color-scheme: dark;
+  --cf-dark-bg: #17191d;
+  --cf-dark-surface: #202329;
+  --cf-dark-surface-raised: #292d34;
+  --cf-dark-surface-hover: #323741;
+  --cf-dark-border: #414752;
+  --cf-dark-border-soft: #343943;
+  --cf-dark-text: #d9dde5;
+  --cf-dark-text-muted: #9ba3b2;
+  --cf-dark-heading: #eef1f6;
+  --cf-dark-link: #65b7ff;
+  --cf-dark-link-visited: #b49cff;
+  --cf-dark-accent: #83a9f8;
+  --cf-dark-code: #14161a;
+  --cf-dark-success: #76d48b;
+  --cf-dark-danger: #ff7b82;
+}
+
+html.cf-dark-mode body:not(.wysiwyg),
+html.cf-dark-mode #body,
+html.cf-dark-mode #pageContent,
+html.cf-dark-mode #sidebar,
+html.cf-dark-mode #footer,
+html.cf-dark-mode .bottom-links {
+  background: var(--cf-dark-bg) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode #header,
+html.cf-dark-mode #header > div,
+html.cf-dark-mode .lang-chooser,
+html.cf-dark-mode .personal-sidebar,
+html.cf-dark-mode .roundbox,
+html.cf-dark-mode .sidebox,
+html.cf-dark-mode #facebox .content,
+html.cf-dark-mode .popup,
+html.cf-dark-mode .modal,
+html.cf-dark-mode .talk-content div[id^="history-text-content"] {
+  background: var(--cf-dark-surface) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode .roundbox {
+  border-radius: 5px;
+}
+
+html.cf-dark-mode .roundbox-lt,
+html.cf-dark-mode .roundbox-lb,
+html.cf-dark-mode .roundbox-rt,
+html.cf-dark-mode .roundbox-rb,
+html.cf-dark-mode .datatable .lt,
+html.cf-dark-mode .datatable .lb,
+html.cf-dark-mode .datatable .rt,
+html.cf-dark-mode .datatable .rb,
+html.cf-dark-mode .datatable .ilt,
+html.cf-dark-mode .datatable .irt {
+  display: none !important;
+}
+
+html.cf-dark-mode,
+html.cf-dark-mode body,
+html.cf-dark-mode #pageContent,
+html.cf-dark-mode .problem-statement,
+html.cf-dark-mode .ttypography,
+html.cf-dark-mode .ttypography table,
+html.cf-dark-mode .ttypography h1,
+html.cf-dark-mode .ttypography h2,
+html.cf-dark-mode .ttypography h3,
+html.cf-dark-mode .ttypography h4,
+html.cf-dark-mode .ttypography h5,
+html.cf-dark-mode .ttypography h6,
+html.cf-dark-mode .problem-statement .header .title,
+html.cf-dark-mode .problem-statement .header .time-limit,
+html.cf-dark-mode .problem-statement .header .memory-limit,
+html.cf-dark-mode .problem-statement .header .input-file,
+html.cf-dark-mode .problem-statement .header .output-file,
+html.cf-dark-mode .problem-statement .section-title,
+html.cf-dark-mode .info,
+html.cf-dark-mode .right-meta,
+html.cf-dark-mode .tickLabel,
+html.cf-dark-mode .pagination,
+html.cf-dark-mode .menu-list-container ul li a,
+html.cf-dark-mode #header h3 {
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode .problem-statement .header .title,
+html.cf-dark-mode .problem-statement .section-title,
+html.cf-dark-mode .ttypography h1,
+html.cf-dark-mode .ttypography h2,
+html.cf-dark-mode .ttypography h3,
+html.cf-dark-mode .ttypography h4,
+html.cf-dark-mode .ttypography h5,
+html.cf-dark-mode .ttypography h6 {
+  color: var(--cf-dark-heading) !important;
+}
+
+html.cf-dark-mode .caption.titled,
+html.cf-dark-mode .contest-state-phase,
+html.cf-dark-mode div.setting-name {
+  color: var(--cf-dark-accent) !important;
+}
+
+html.cf-dark-mode .notice,
+html.cf-dark-mode .info,
+html.cf-dark-mode .right-meta,
+html.cf-dark-mode span.contest-state-regular,
+html.cf-dark-mode .countdown,
+html.cf-dark-mode blockquote {
+  color: var(--cf-dark-text-muted) !important;
+}
+
+html.cf-dark-mode a:link:not(.rated-user) {
+  color: var(--cf-dark-link) !important;
+}
+
+html.cf-dark-mode a:visited:not(.rated-user) {
+  color: var(--cf-dark-link-visited) !important;
+}
+
+html.cf-dark-mode a:hover:not(.rated-user),
+html.cf-dark-mode a:focus:not(.rated-user) {
+  color: #9bd0ff !important;
+}
+
+html.cf-dark-mode .second-level-menu-list,
+html.cf-dark-mode .second-level-menu-list li,
+html.cf-dark-mode .menu-list,
+html.cf-dark-mode .menu-list li,
+html.cf-dark-mode .sidebar-menu ul li {
+  background-color: var(--cf-dark-surface) !important;
+  border-color: var(--cf-dark-border-soft) !important;
+}
+
+html.cf-dark-mode .second-level-menu-list li:hover,
+html.cf-dark-mode .menu-list li:hover,
+html.cf-dark-mode .sidebar-menu ul li:hover,
+html.cf-dark-mode .page-index.active {
+  background-color: var(--cf-dark-surface-hover) !important;
+}
+
+html.cf-dark-mode .datatable,
+html.cf-dark-mode .status-frame-datatable,
+html.cf-dark-mode .ttypography table,
+html.cf-dark-mode .bordertable {
+  background-color: var(--cf-dark-border) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode .datatable th,
+html.cf-dark-mode .status-frame-datatable th,
+html.cf-dark-mode .ttypography thead th,
+html.cf-dark-mode .bordertable th {
+  background: var(--cf-dark-surface-raised) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-heading) !important;
+}
+
+html.cf-dark-mode .datatable td,
+html.cf-dark-mode .status-frame-datatable td,
+html.cf-dark-mode .ttypography tbody td,
+html.cf-dark-mode .bordertable td {
+  background: var(--cf-dark-surface) !important;
+  border-color: var(--cf-dark-border-soft) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode .datatable tr:nth-child(even) td,
+html.cf-dark-mode .status-frame-datatable tr:nth-child(even) td,
+html.cf-dark-mode .ttypography tbody tr:nth-child(even) td {
+  background: #252930 !important;
+}
+
+html.cf-dark-mode .datatable tr:hover td,
+html.cf-dark-mode .status-frame-datatable tr:hover td,
+html.cf-dark-mode .ttypography tbody tr:hover td {
+  background: var(--cf-dark-surface-hover) !important;
+}
+
+html.cf-dark-mode .datatable td.dark,
+html.cf-dark-mode .datatable td.dark div.dark,
+html.cf-dark-mode .status-frame-datatable td.dark,
+html.cf-dark-mode .datatable > div.dark {
+  background: var(--cf-dark-surface-raised) !important;
+}
+
+html.cf-dark-mode input,
+html.cf-dark-mode textarea,
+html.cf-dark-mode select,
+html.cf-dark-mode button,
+html.cf-dark-mode .search,
+html.cf-dark-mode .ac_input,
+html.cf-dark-mode #title,
+html.cf-dark-mode #comment {
+  background: var(--cf-dark-surface-raised) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode input::placeholder,
+html.cf-dark-mode textarea::placeholder {
+  color: var(--cf-dark-text-muted) !important;
+}
+
+html.cf-dark-mode button:hover,
+html.cf-dark-mode input[type="button"]:hover,
+html.cf-dark-mode input[type="submit"]:hover {
+  background: var(--cf-dark-surface-hover) !important;
+}
+
+html.cf-dark-mode .input,
+html.cf-dark-mode .output,
+html.cf-dark-mode pre,
+html.cf-dark-mode code,
+html.cf-dark-mode .prettyprint,
+html.cf-dark-mode .source,
+html.cf-dark-mode textarea[name="input"],
+html.cf-dark-mode textarea[name="output"],
+html.cf-dark-mode #sourceCodeTextarea {
+  background: var(--cf-dark-code) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: #e6e9ef !important;
+}
+
+html.cf-dark-mode .input pre,
+html.cf-dark-mode .output pre,
+html.cf-dark-mode pre.input,
+html.cf-dark-mode pre.output,
+html.cf-dark-mode pre.answer,
+html.cf-dark-mode pre.checker,
+html.cf-dark-mode pre.diagnostics {
+  background: transparent !important;
+  color: #e6e9ef !important;
+}
+
+html.cf-dark-mode .problem-statement .test-example-line,
+html.cf-dark-mode .problem-statement .test-example-line-even {
+  background-color: #242830 !important;
+}
+
+html.cf-dark-mode .tex-formula,
+html.cf-dark-mode div.ttypography .MathJax {
+  filter: invert(0.86) hue-rotate(180deg);
+}
+
+html.cf-dark-mode .spoiler-content,
+html.cf-dark-mode .roundbox.highlight-blue,
+html.cf-dark-mode .comment-table.highlight-blue,
+html.cf-dark-mode .comment-table.highlight,
+html.cf-dark-mode .standings tr.highlighted-row td,
+html.cf-dark-mode table tr.highlighted-row td,
+html.cf-dark-mode .highlight-blue {
+  background-color: #263553 !important;
+}
+
+html.cf-dark-mode .roundbox.highlight-blue .caption.titled,
+html.cf-dark-mode .roundbox.highlight-blue .caption.titled + div {
+  color: #dce7ff !important;
+}
+
+html.cf-dark-mode .alert-success {
+  background: #173d29 !important;
+  border-color: #296343 !important;
+  color: #b9efca !important;
+}
+
+html.cf-dark-mode .alert-danger,
+html.cf-dark-mode .alert-error,
+html.cf-dark-mode span.error {
+  background-color: #492126 !important;
+  border-color: #72353d !important;
+  color: #ffc3c6 !important;
+}
+
+html.cf-dark-mode .standings .cell-accepted,
+html.cf-dark-mode .standings .cell-accepted-locked,
+html.cf-dark-mode .standings .cell-passed-system-test,
+html.cf-dark-mode .verdict-accepted {
+  color: var(--cf-dark-success) !important;
+}
+
+html.cf-dark-mode .standings .cell-challenged,
+html.cf-dark-mode span.cell-rejected,
+html.cf-dark-mode .verdict-rejected,
+html.cf-dark-mode .verdict-failed {
+  color: var(--cf-dark-danger) !important;
+}
+
+html.cf-dark-mode #cf-problem-rating .cf-rating-pill,
+html.cf-dark-mode .tag-box {
+  background-color: var(--cf-dark-surface-raised) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode span.user-legendary::first-letter,
+html.cf-dark-mode a.user-legendary::first-letter,
+html.cf-dark-mode span.user-admin,
+html.cf-dark-mode a.user-admin,
+html.cf-dark-mode span.user-black,
+html.cf-dark-mode a.user-black {
+  color: #fff !important;
+}
+
+html.cf-dark-mode tr.user-red td,
+html.cf-dark-mode span.user-red,
+html.cf-dark-mode a.user-red,
+html.cf-dark-mode span.user-legendary,
+html.cf-dark-mode a.user-legendary {
+  color: #ff6f75 !important;
+}
+
+html.cf-dark-mode tr.user-violet td,
+html.cf-dark-mode span.user-violet,
+html.cf-dark-mode a.user-violet {
+  color: #d49aff !important;
+}
+
+html.cf-dark-mode tr.user-blue td,
+html.cf-dark-mode span.user-blue,
+html.cf-dark-mode a.user-blue {
+  color: #8395ff !important;
+}
+
+html.cf-dark-mode tr.user-cyan td,
+html.cf-dark-mode span.user-cyan,
+html.cf-dark-mode a.user-cyan {
+  color: #35d2c7 !important;
+}
+
+html.cf-dark-mode tr.user-green td,
+html.cf-dark-mode span.user-green,
+html.cf-dark-mode a.user-green {
+  color: #68d57a !important;
+}
+
+html.cf-dark-mode tr.user-gray td,
+html.cf-dark-mode span.user-gray,
+html.cf-dark-mode a.user-gray {
+  color: #a9afb9 !important;
+}
+
+html.cf-dark-mode img[src*="codeforces.com"] {
+  background-color: transparent !important;
+}
+
+html.cf-dark-mode #header > div:first-child img,
+html.cf-dark-mode ._logo_div img,
+html.cf-dark-mode .sidebox img[alt="Logo"] {
+  background-color: #fff !important;
+  border-radius: 3px;
+}

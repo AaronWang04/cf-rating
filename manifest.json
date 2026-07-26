@@ -1,11 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "Codeforces Problem Rating",
-  "version": "1.0.0",
-  "description": "Shows a problem's Codeforces rating in the sidebar without revealing its tags.",
+  "name": "Codeforces Rating & Dark Mode",
+  "version": "1.1.0",
+  "description": "Adds optional problem ratings and an accessible dark theme to Codeforces.",
   "permissions": [
     "storage"
   ],
+  "action": {
+    "default_title": "Codeforces features",
+    "default_popup": "popup/popup.html"
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "cf-rating@aaronw.dev",
@@ -19,10 +23,24 @@
   "content_scripts": [
     {
       "matches": [
+        "https://codeforces.com/*"
+      ],
+      "js": [
+        "src/settings.js",
+        "src/theme.js"
+      ],
+      "css": [
+        "src/dark.css"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
         "https://codeforces.com/contest/*/problem/*",
         "https://codeforces.com/problemset/problem/*/*"
       ],
       "js": [
+        "src/settings.js",
         "src/core.js",
         "src/content.js"
       ],
