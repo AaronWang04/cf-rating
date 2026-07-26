@@ -4,9 +4,10 @@
   const settings = globalThis.CodeforcesFeatureSettings;
   const ratingToggle = document.querySelector("#rating-toggle");
   const darkModeToggle = document.querySelector("#dark-mode-toggle");
+  const oledModeToggle = document.querySelector("#oled-mode-toggle");
   const status = document.querySelector("#status");
 
-  if (!settings || !ratingToggle || !darkModeToggle || !status) {
+  if (!settings || !ratingToggle || !darkModeToggle || !oledModeToggle || !status) {
     return;
   }
 
@@ -18,6 +19,10 @@
     {
       element: darkModeToggle,
       feature: "darkModeEnabled"
+    },
+    {
+      element: oledModeToggle,
+      feature: "oledModeEnabled"
     }
   ];
 
@@ -36,11 +41,28 @@
 
   async function saveControl(control) {
     status.textContent = "";
+    const updates = {
+      [control.feature]: control.element.checked
+    };
+
+    if (control.feature === "oledModeEnabled" && control.element.checked) {
+      darkModeToggle.checked = true;
+      updates.darkModeEnabled = true;
+    } else if (
+      control.feature === "darkModeEnabled" &&
+      !control.element.checked
+    ) {
+      oledModeToggle.checked = false;
+      updates.oledModeEnabled = false;
+    }
 
     try {
-      await settings.set(control.feature, control.element.checked);
+      await settings.setMany(updates);
     } catch (error) {
-      control.element.checked = !control.element.checked;
+      const saved = await settings.read();
+      for (const item of controls) {
+        item.element.checked = saved[item.feature];
+      }
       showError(error);
     }
   }

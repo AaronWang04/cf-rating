@@ -1,8 +1,8 @@
 {
   "name": "cf-rating",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
-  "description": "A browser extension with optional Codeforces problem ratings and dark mode.",
+  "description": "A browser extension with optional Codeforces problem ratings, dark mode, and OLED mode.",
   "scripts": {
     "test": "node --test",
     "check": "node --check src/core.js && node --check src/settings.js && node --check src/theme.js && node --check src/content.js && node --check popup/popup.js && npm test"

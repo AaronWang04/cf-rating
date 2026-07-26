@@ -23,6 +23,16 @@ html.cf-dark-mode {
   --cf-dark-danger: #ff7b82;
 }
 
+html.cf-dark-mode.cf-oled-mode {
+  --cf-dark-bg: #000;
+  --cf-dark-surface: #000;
+  --cf-dark-surface-raised: #0a0a0a;
+  --cf-dark-surface-hover: #151515;
+  --cf-dark-border: #292929;
+  --cf-dark-border-soft: #1f1f1f;
+  --cf-dark-code: #000;
+}
+
 html.cf-dark-mode body:not(.wysiwyg),
 html.cf-dark-mode #body,
 html.cf-dark-mode #pageContent,
@@ -180,6 +190,12 @@ html.cf-dark-mode .ttypography tbody tr:nth-child(even) td {
   background: #252930 !important;
 }
 
+html.cf-dark-mode.cf-oled-mode .datatable tr:nth-child(even) td,
+html.cf-dark-mode.cf-oled-mode .status-frame-datatable tr:nth-child(even) td,
+html.cf-dark-mode.cf-oled-mode .ttypography tbody tr:nth-child(even) td {
+  background: #070707 !important;
+}
+
 html.cf-dark-mode .datatable tr:hover td,
 html.cf-dark-mode .status-frame-datatable tr:hover td,
 html.cf-dark-mode .ttypography tbody tr:hover td {
@@ -245,6 +261,11 @@ html.cf-dark-mode pre.diagnostics {
 html.cf-dark-mode .problem-statement .test-example-line,
 html.cf-dark-mode .problem-statement .test-example-line-even {
   background-color: #242830 !important;
+}
+
+html.cf-dark-mode.cf-oled-mode .problem-statement .test-example-line,
+html.cf-dark-mode.cf-oled-mode .problem-statement .test-example-line-even {
+  background-color: #0a0a0a !important;
 }
 
 html.cf-dark-mode .tex-formula,

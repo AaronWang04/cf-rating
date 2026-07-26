@@ -22,12 +22,14 @@ class FakeControl {
   }
 }
 
-test("popup initializes and persists both feature toggles", async () => {
+test("popup initializes and persists all feature toggles", async () => {
   const ratingToggle = new FakeControl();
   const darkModeToggle = new FakeControl();
+  const oledModeToggle = new FakeControl();
   const status = { textContent: "" };
   const stored = {
     codeforcesDarkModeEnabled: false,
+    codeforcesOledModeEnabled: false,
     codeforcesRatingEnabled: true
   };
   const chrome = {
@@ -52,6 +54,7 @@ test("popup initializes and persists both feature toggles", async () => {
   };
   const elements = {
     "#dark-mode-toggle": darkModeToggle,
+    "#oled-mode-toggle": oledModeToggle,
     "#rating-toggle": ratingToggle,
     "#status": status
   };
@@ -79,11 +82,22 @@ test("popup initializes and persists both feature toggles", async () => {
   assert.equal(ratingToggle.disabled, false);
   assert.equal(darkModeToggle.checked, false);
   assert.equal(darkModeToggle.disabled, false);
+  assert.equal(oledModeToggle.checked, false);
+  assert.equal(oledModeToggle.disabled, false);
 
-  darkModeToggle.checked = true;
-  darkModeToggle.dispatch("change");
+  oledModeToggle.checked = true;
+  oledModeToggle.dispatch("change");
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(stored.codeforcesDarkModeEnabled, true);
+  assert.equal(stored.codeforcesOledModeEnabled, true);
+  assert.equal(darkModeToggle.checked, true);
+
+  darkModeToggle.checked = false;
+  darkModeToggle.dispatch("change");
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(stored.codeforcesDarkModeEnabled, false);
+  assert.equal(stored.codeforcesOledModeEnabled, false);
+  assert.equal(oledModeToggle.checked, false);
 
   ratingToggle.checked = false;
   ratingToggle.dispatch("change");

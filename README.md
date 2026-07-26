@@ -7,6 +7,8 @@ Codeforces features:
   revealing the problem tags.
 - **Dark mode** applies a low-glare theme across Codeforces, including problem
   statements, tables, forms, dialogs, samples, and code blocks.
+- **OLED mode** changes the dark theme to true-black backgrounds for OLED
+  displays.
 
 It uses the official
 [`problemset.problems`](https://codeforces.com/apiHelp/methods#problemset.problems)
@@ -32,12 +34,13 @@ Firefox removes temporarily loaded extensions when the browser restarts.
 Permanent installation requires packaging and signing the extension through
 Mozilla Add-ons.
 
-Click the extension's toolbar button to turn **Problem rating** and **Dark
-mode** on or off independently. Changes are saved locally and apply immediately
-to open Codeforces tabs.
+Click the extension's toolbar button to control **Problem rating**, **Dark
+mode**, and **OLED mode**. Changes are saved locally and apply immediately to
+open Codeforces tabs. OLED mode enables dark mode automatically; disabling dark
+mode also disables OLED mode.
 
 Problem rating is on by default to preserve the extension's existing behavior;
-dark mode is off by default. On a URL such as
+dark mode and OLED mode are off by default. On a URL such as
 `https://codeforces.com/problemset/problem/4/A`, the rating box appears
 immediately after Codeforces' **Problem tags** box. If the API does not provide
 a rating for that problem, the box says **Not rated**.

@@ -6,7 +6,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 
-test("applies and removes dark mode as the stored setting changes", async () => {
+test("applies regular and OLED dark mode as settings change", async () => {
   const classes = new Set();
   const listeners = new Set();
   const chrome = {
@@ -15,7 +15,8 @@ test("applies and removes dark mode as the stored setting changes", async () => 
       local: {
         get(keys, callback) {
           callback({
-            codeforcesDarkModeEnabled: true,
+            codeforcesDarkModeEnabled: false,
+            codeforcesOledModeEnabled: true,
             codeforcesRatingEnabled: true
           });
         },
@@ -63,11 +64,12 @@ test("applies and removes dark mode as the stored setting changes", async () => 
   vm.runInContext(themeSource, context);
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(classes.has("cf-dark-mode"), true);
+  assert.equal(classes.has("cf-oled-mode"), true);
 
   for (const listener of listeners) {
     listener(
       {
-        codeforcesDarkModeEnabled: {
+        codeforcesOledModeEnabled: {
           oldValue: true,
           newValue: false
         }
@@ -76,4 +78,5 @@ test("applies and removes dark mode as the stored setting changes", async () => 
     );
   }
   assert.equal(classes.has("cf-dark-mode"), false);
+  assert.equal(classes.has("cf-oled-mode"), false);
 });

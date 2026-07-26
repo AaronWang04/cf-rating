@@ -11,10 +11,12 @@
 
   const STORAGE_KEYS = Object.freeze({
     darkModeEnabled: "codeforcesDarkModeEnabled",
+    oledModeEnabled: "codeforcesOledModeEnabled",
     ratingEnabled: "codeforcesRatingEnabled"
   });
   const DEFAULTS = Object.freeze({
     darkModeEnabled: false,
+    oledModeEnabled: false,
     ratingEnabled: true
   });
 
@@ -24,6 +26,10 @@
         typeof stored[STORAGE_KEYS.darkModeEnabled] === "boolean"
           ? stored[STORAGE_KEYS.darkModeEnabled]
           : DEFAULTS.darkModeEnabled,
+      oledModeEnabled:
+        typeof stored[STORAGE_KEYS.oledModeEnabled] === "boolean"
+          ? stored[STORAGE_KEYS.oledModeEnabled]
+          : DEFAULTS.oledModeEnabled,
       ratingEnabled:
         typeof stored[STORAGE_KEYS.ratingEnabled] === "boolean"
           ? stored[STORAGE_KEYS.ratingEnabled]
@@ -52,13 +58,21 @@
   }
 
   function set(feature, enabled) {
-    return new Promise((resolve, reject) => {
-      const storageKey = STORAGE_KEYS[feature];
-      const storage = globalThis.chrome?.storage?.local;
+    return setMany({ [feature]: enabled });
+  }
 
-      if (!storageKey) {
-        reject(new Error(`Unknown feature setting: ${feature}`));
-        return;
+  function setMany(updates) {
+    return new Promise((resolve, reject) => {
+      const storage = globalThis.chrome?.storage?.local;
+      const storedUpdates = {};
+
+      for (const [feature, enabled] of Object.entries(updates)) {
+        const storageKey = STORAGE_KEYS[feature];
+        if (!storageKey) {
+          reject(new Error(`Unknown feature setting: ${feature}`));
+          return;
+        }
+        storedUpdates[storageKey] = Boolean(enabled);
       }
 
       if (!storage) {
@@ -66,7 +80,7 @@
         return;
       }
 
-      storage.set({ [storageKey]: Boolean(enabled) }, () => {
+      storage.set(storedUpdates, () => {
         const error = globalThis.chrome?.runtime?.lastError;
         if (error) {
           reject(new Error(error.message));
@@ -116,6 +130,7 @@
     normalize,
     read,
     set,
+    setMany,
     subscribe
   });
 });

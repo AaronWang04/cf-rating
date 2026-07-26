@@ -7,15 +7,18 @@ const settings = require("../src/settings.js");
 test("uses backward-compatible feature defaults", () => {
   assert.deepEqual(settings.normalize(), {
     darkModeEnabled: false,
+    oledModeEnabled: false,
     ratingEnabled: true
   });
   assert.deepEqual(
     settings.normalize({
       codeforcesDarkModeEnabled: true,
+      codeforcesOledModeEnabled: true,
       codeforcesRatingEnabled: false
     }),
     {
       darkModeEnabled: true,
+      oledModeEnabled: true,
       ratingEnabled: false
     }
   );
@@ -25,6 +28,7 @@ test("reads, writes, and publishes feature setting changes", async (context) => 
   const originalChrome = globalThis.chrome;
   const stored = {
     codeforcesDarkModeEnabled: true,
+    codeforcesOledModeEnabled: false,
     codeforcesRatingEnabled: true
   };
   const listeners = new Set();
@@ -63,11 +67,17 @@ test("reads, writes, and publishes feature setting changes", async (context) => 
 
   assert.deepEqual(await settings.read(), {
     darkModeEnabled: true,
+    oledModeEnabled: false,
     ratingEnabled: true
   });
 
-  await settings.set("ratingEnabled", false);
+  await settings.setMany({
+    darkModeEnabled: true,
+    oledModeEnabled: true,
+    ratingEnabled: false
+  });
   assert.equal(stored.codeforcesRatingEnabled, false);
+  assert.equal(stored.codeforcesOledModeEnabled, true);
 
   let received = null;
   const unsubscribe = settings.subscribe((changed) => {
@@ -76,16 +86,16 @@ test("reads, writes, and publishes feature setting changes", async (context) => 
   for (const listener of listeners) {
     listener(
       {
-        codeforcesDarkModeEnabled: {
-          oldValue: true,
-          newValue: false
+        codeforcesOledModeEnabled: {
+          oldValue: false,
+          newValue: true
         }
       },
       "local"
     );
   }
 
-  assert.deepEqual(received, { darkModeEnabled: false });
+  assert.deepEqual(received, { oledModeEnabled: true });
   unsubscribe();
   assert.equal(listeners.size, 0);
 });

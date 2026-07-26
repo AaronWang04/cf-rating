@@ -28,5 +28,6 @@ test("popup only loads packaged scripts", () => {
 
   assert.match(popup, /id="rating-toggle"/);
   assert.match(popup, /id="dark-mode-toggle"/);
+  assert.match(popup, /id="oled-mode-toggle"/);
   assert.doesNotMatch(popup, /<script[^>]+src=["']https?:/i);
 });
