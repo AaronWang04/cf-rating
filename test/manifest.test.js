@@ -60,3 +60,15 @@ test("dark theme covers compact ranking tables and legendary handles", () => {
   assert.match(darkTheme, /table\.rtable td\.dark/);
   assert.match(darkTheme, /\.user-legendary \.legendary-user-first-letter/);
 });
+
+test("dark theme replaces Codeforces lava-menu images", () => {
+  const darkTheme = fs.readFileSync(
+    path.join(__dirname, "../src/dark.css"),
+    "utf8"
+  );
+
+  assert.match(darkTheme, /li\.backLava/);
+  assert.match(darkTheme, /li\.backLava > div/);
+  assert.match(darkTheme, /background-image: none !important/);
+  assert.match(darkTheme, /li\.selectedLava > a:visited/);
+});

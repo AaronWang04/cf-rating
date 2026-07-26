@@ -1,6 +1,6 @@
 {
   "name": "cf-rating",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
   "description": "A browser extension with optional Codeforces problem ratings, dark mode, and OLED mode.",
   "scripts": {

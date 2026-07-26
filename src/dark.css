@@ -166,6 +166,30 @@ html.cf-dark-mode .page-index.active {
   background-color: var(--cf-dark-surface-hover) !important;
 }
 
+/* Codeforces animates a two-piece light "lava" image behind the selected
+   contest tab. Remove both image halves and draw the selected state in CSS. */
+html.cf-dark-mode .second-level-menu-list li.backLava {
+  background: var(--cf-dark-surface-hover) !important;
+  background-image: none !important;
+  border: 1px solid var(--cf-dark-border) !important;
+  border-radius: 6px !important;
+  box-shadow: inset 0 -2px 0 var(--cf-dark-accent);
+}
+
+html.cf-dark-mode .second-level-menu-list li.backLava > div {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+html.cf-dark-mode .second-level-menu-list li.selectedLava {
+  background-image: none !important;
+}
+
+html.cf-dark-mode .second-level-menu-list li.selectedLava > a:link,
+html.cf-dark-mode .second-level-menu-list li.selectedLava > a:visited {
+  color: var(--cf-dark-heading) !important;
+}
+
 html.cf-dark-mode .datatable,
 html.cf-dark-mode .status-frame-datatable,
 html.cf-dark-mode .ttypography table,
