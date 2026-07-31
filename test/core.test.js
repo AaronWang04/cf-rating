@@ -22,6 +22,38 @@ test("parses contest problem URLs without relying on string offsets", () => {
   );
 });
 
+test("parses contest dashboard URLs", () => {
+  assert.equal(
+    core.parseContestUrl("https://codeforces.com/contest/2227"),
+    2227
+  );
+  assert.equal(
+    core.parseContestUrl("https://codeforces.com/contest/2227/"),
+    2227
+  );
+  assert.equal(
+    core.parseContestUrl("https://codeforces.com/contest/2227/standings"),
+    null
+  );
+});
+
+test("recognizes the problemset table URL", () => {
+  assert.equal(
+    core.isProblemsetUrl(
+      "https://codeforces.com/problemset?order=BY_RATING_DESC"
+    ),
+    true
+  );
+  assert.equal(
+    core.isProblemsetUrl("https://codeforces.com/problemset/"),
+    true
+  );
+  assert.equal(
+    core.isProblemsetUrl("https://codeforces.com/problemset/problem/4/A"),
+    false
+  );
+});
+
 test("rejects unrelated and malformed URLs", () => {
   assert.equal(core.parseProblemUrl("https://codeforces.com/problemset"), null);
   assert.equal(core.parseProblemUrl("not a URL"), null);

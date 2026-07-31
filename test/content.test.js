@@ -13,6 +13,7 @@ class FakeElement {
     this.children = [];
     this.parentElement = null;
     this.className = "";
+    this.href = "";
     this.id = "";
     this.title = "";
     this._text = "";
@@ -31,6 +32,14 @@ class FakeElement {
 
   appendChild(element) {
     this.append(element);
+    return element;
+  }
+
+  insertBefore(element, reference) {
+    const index = this.children.indexOf(reference);
+    assert.notEqual(index, -1);
+    element.parentElement = this;
+    this.children.splice(index, 0, element);
     return element;
   }
 
@@ -77,6 +86,13 @@ class FakeElement {
   }
 
   matches(selector) {
+    const tagAndClass = selector.match(/^([a-z]+)\.([a-z0-9_-]+)$/i);
+    if (tagAndClass) {
+      return (
+        this.tagName === tagAndClass[1].toUpperCase() &&
+        this.className.split(/\s+/).includes(tagAndClass[2])
+      );
+    }
     if (selector.startsWith(".")) {
       return this.className.split(/\s+/).includes(selector.slice(1));
     }
@@ -95,8 +111,18 @@ class FakeElement {
     return this._text + this.children.map((child) => child.textContent).join("");
   }
 
+  get cells() {
+    return this.children.filter((child) =>
+      ["TD", "TH"].includes(child.tagName)
+    );
+  }
+
   set innerHTML(value) {
     this._text = String(value);
+  }
+
+  get innerHTML() {
+    return this.textContent;
   }
 }
 
@@ -251,5 +277,298 @@ test("independently toggles rating and tags in a native-style box", async () => 
       sidebar.querySelector("#cf-problem-rating")?.querySelector(".tag-box")
         ?.textContent,
     "*800"
+  );
+});
+
+test("shows ratings in a contest problem table and follows the rating toggle", async () => {
+  const root = new FakeElement("div");
+  const table = new FakeElement("table");
+  table.className = "problems";
+
+  const headerRow = new FakeElement("tr");
+  for (const [text, className] of [
+    ["#", "top left"],
+    ["Name", "top"],
+    ["", "top"],
+    ["", "top right"]
+  ]) {
+    const cell = new FakeElement("th");
+    cell.textContent = text;
+    cell.className = className;
+    headerRow.append(cell);
+  }
+  table.append(headerRow);
+
+  function appendProblemRow(index, isDark, ratingExpected) {
+    const row = new FakeElement("tr");
+    const idCell = new FakeElement("td");
+    idCell.className = `id ${isDark ? "dark " : ""}left`;
+    const link = new FakeElement("a");
+    link.href = `https://codeforces.com/contest/2227/problem/${index}`;
+    link.textContent = index;
+    idCell.append(link);
+
+    const nameCell = new FakeElement("td");
+    nameCell.className = isDark ? "dark" : "";
+    nameCell.textContent = `Problem ${index}`;
+    const actionCell = new FakeElement("td");
+    actionCell.className = isDark ? "act dark" : "act";
+    const solvedCell = new FakeElement("td");
+    solvedCell.className = `${isDark ? "dark " : ""}right`;
+    row.append(idCell, nameCell, actionCell, solvedCell);
+    table.append(row);
+    return { ratingExpected, row };
+  }
+
+  const problemA = appendProblemRow("A", true, "*800");
+  const problemB = appendProblemRow("B", false, "—");
+  root.append(table);
+
+  const cache = {
+    version: core.CACHE_VERSION,
+    storedAt: Date.now(),
+    problems: {
+      "2227:A": { rating: 800, tags: [] },
+      "2227:B": { rating: null, tags: [] }
+    }
+  };
+  const stored = {
+    codeforcesProblemMetadata: cache,
+    codeforcesRatingEnabled: true
+  };
+  const changeListeners = new Set();
+  const chrome = {
+    runtime: {},
+    storage: {
+      local: {
+        get(keys, callback) {
+          const requested = Array.isArray(keys) ? keys : [keys];
+          callback(
+            Object.fromEntries(
+              requested
+                .filter((key) => Object.hasOwn(stored, key))
+                .map((key) => [key, stored[key]])
+            )
+          );
+        },
+        set(values, callback) {
+          Object.assign(stored, values);
+          callback?.();
+        }
+      },
+      onChanged: {
+        addListener(listener) {
+          changeListeners.add(listener);
+        },
+        removeListener(listener) {
+          changeListeners.delete(listener);
+        }
+      }
+    }
+  };
+  const document = {
+    createElement: (tagName) => new FakeElement(tagName),
+    getElementById: () => null,
+    querySelector: (selector) =>
+      selector === "table.problems" ? table : root.querySelector(selector),
+    querySelectorAll: (selector) => root.querySelectorAll(selector)
+  };
+  const settingsSource = fs.readFileSync(
+    path.join(__dirname, "../src/settings.js"),
+    "utf8"
+  );
+  const contentSource = fs.readFileSync(
+    path.join(__dirname, "../src/content.js"),
+    "utf8"
+  );
+  const context = vm.createContext({
+    CodeforcesRating: core,
+    URL,
+    chrome,
+    console,
+    document,
+    window: {
+      location: {
+        href: "https://codeforces.com/contest/2227",
+        origin: "https://codeforces.com"
+      }
+    }
+  });
+
+  vm.runInContext(settingsSource, context);
+  vm.runInContext(contentSource, context);
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(headerRow.cells[2].textContent, "Rating");
+  for (const { ratingExpected, row } of [problemA, problemB]) {
+    assert.equal(row.cells[2].textContent, ratingExpected);
+  }
+  assert.match(problemA.row.cells[2].className, /\bdark\b/);
+  assert.match(problemB.row.cells[2].className, /unavailable/);
+
+  for (const listener of changeListeners) {
+    listener(
+      {
+        codeforcesRatingEnabled: {
+          oldValue: true,
+          newValue: false
+        }
+      },
+      "local"
+    );
+  }
+
+  assert.equal(headerRow.cells.length, 4);
+  assert.equal(problemA.row.cells.length, 4);
+  assert.equal(problemB.row.cells.length, 4);
+});
+
+test("fills the native problemset rating column and restores it when disabled", async () => {
+  const root = new FakeElement("div");
+  const table = new FakeElement("table");
+  table.className = "problems";
+
+  const headerRow = new FakeElement("tr");
+  for (let index = 0; index < 5; index += 1) {
+    const cell = new FakeElement("th");
+    cell.className = "top";
+    if (index === 3) {
+      const sortLink = new FakeElement("a");
+      sortLink.href =
+        "https://codeforces.com/problemset?order=BY_RATING_DESC";
+      cell.append(sortLink);
+    }
+    headerRow.append(cell);
+  }
+  table.append(headerRow);
+
+  function appendProblemRow(contestId, index, isDark, nativeRating = "") {
+    const row = new FakeElement("tr");
+    const idCell = new FakeElement("td");
+    idCell.className = `id ${isDark ? "dark " : ""}left`;
+    const link = new FakeElement("a");
+    link.href =
+      `https://codeforces.com/problemset/problem/${contestId}/${index}`;
+    idCell.append(link);
+
+    const nameCell = new FakeElement("td");
+    nameCell.className = isDark ? "dark" : "";
+    const actionCell = new FakeElement("td");
+    actionCell.className = isDark ? "act dark" : "act";
+    const ratingCell = new FakeElement("td");
+    ratingCell.className = isDark ? "dark" : "";
+    ratingCell.textContent = nativeRating;
+    const solvedCell = new FakeElement("td");
+    solvedCell.className = `${isDark ? "dark " : ""}right`;
+    row.append(idCell, nameCell, actionCell, ratingCell, solvedCell);
+    table.append(row);
+    return { ratingCell, row };
+  }
+
+  const problemA = appendProblemRow(2250, "A", true);
+  const problemB = appendProblemRow(2250, "B", false, "1200");
+  const problemC = appendProblemRow(2250, "C", true);
+  root.append(table);
+
+  const stored = {
+    codeforcesProblemMetadata: {
+      version: core.CACHE_VERSION,
+      storedAt: Date.now(),
+      problems: {
+        "2250:A": { rating: 800, tags: [] },
+        "2250:B": { rating: null, tags: [] },
+        "2250:C": { rating: null, tags: [] }
+      }
+    },
+    codeforcesRatingEnabled: true
+  };
+  const changeListeners = new Set();
+  const chrome = {
+    runtime: {},
+    storage: {
+      local: {
+        get(keys, callback) {
+          const requested = Array.isArray(keys) ? keys : [keys];
+          callback(
+            Object.fromEntries(
+              requested
+                .filter((key) => Object.hasOwn(stored, key))
+                .map((key) => [key, stored[key]])
+            )
+          );
+        },
+        set(values, callback) {
+          Object.assign(stored, values);
+          callback?.();
+        }
+      },
+      onChanged: {
+        addListener(listener) {
+          changeListeners.add(listener);
+        },
+        removeListener(listener) {
+          changeListeners.delete(listener);
+        }
+      }
+    }
+  };
+  const document = {
+    createElement: (tagName) => new FakeElement(tagName),
+    getElementById: () => null,
+    querySelector: (selector) =>
+      selector === "table.problems" ? table : root.querySelector(selector),
+    querySelectorAll: (selector) => root.querySelectorAll(selector)
+  };
+  const settingsSource = fs.readFileSync(
+    path.join(__dirname, "../src/settings.js"),
+    "utf8"
+  );
+  const contentSource = fs.readFileSync(
+    path.join(__dirname, "../src/content.js"),
+    "utf8"
+  );
+  const context = vm.createContext({
+    CodeforcesRating: core,
+    URL,
+    chrome,
+    console,
+    document,
+    window: {
+      location: {
+        href: "https://codeforces.com/problemset",
+        origin: "https://codeforces.com"
+      }
+    }
+  });
+
+  vm.runInContext(settingsSource, context);
+  vm.runInContext(contentSource, context);
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(headerRow.cells.length, 5);
+  assert.equal(problemA.row.cells.length, 5);
+  assert.equal(problemA.ratingCell.textContent, "800");
+  assert.match(problemA.ratingCell.className, /cf-problemset-rating-cell/);
+  assert.equal(problemB.ratingCell.textContent, "1200");
+  assert.equal(problemC.ratingCell.textContent, "—");
+
+  for (const listener of changeListeners) {
+    listener(
+      {
+        codeforcesRatingEnabled: {
+          oldValue: true,
+          newValue: false
+        }
+      },
+      "local"
+    );
+  }
+
+  assert.equal(problemA.ratingCell.textContent, "");
+  assert.equal(problemB.ratingCell.textContent, "1200");
+  assert.equal(problemC.ratingCell.textContent, "");
+  assert.doesNotMatch(
+    problemA.ratingCell.className,
+    /cf-problemset-rating-cell/
   );
 });

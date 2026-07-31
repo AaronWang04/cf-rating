@@ -211,6 +211,13 @@ html.cf-dark-mode .datatable > div:nth-of-type(5) {
   color: var(--cf-dark-heading) !important;
 }
 
+/* Codeforces hard-codes white on the wrapper around many problem, standings,
+   rating, gym, group, course, and submission tables. The table covers almost
+   all of it, but the wrapper otherwise leaves a bright edge visible. */
+html.cf-dark-mode .datatable > div[style*="background-color: white"] {
+  background-color: var(--cf-dark-surface) !important;
+}
+
 html.cf-dark-mode .datatable th,
 html.cf-dark-mode .status-frame-datatable th,
 html.cf-dark-mode .ttypography thead th,
@@ -252,6 +259,11 @@ html.cf-dark-mode .datatable td.dark div.dark,
 html.cf-dark-mode .status-frame-datatable td.dark,
 html.cf-dark-mode .datatable > div.dark {
   background: var(--cf-dark-surface-raised) !important;
+}
+
+html.cf-dark-mode .datatable td.act {
+  background: #173d29 !important;
+  color: #b9efca !important;
 }
 
 /* Compact sidebar ranking tables use .rtable instead of .datatable and mark
@@ -317,6 +329,16 @@ html.cf-dark-mode textarea::placeholder {
 html.cf-dark-mode button:hover,
 html.cf-dark-mode input[type="button"]:hover,
 html.cf-dark-mode input[type="submit"]:hover {
+  background: var(--cf-dark-surface-hover) !important;
+}
+
+html.cf-dark-mode input[type="file"]::file-selector-button {
+  background: var(--cf-dark-surface-raised) !important;
+  border: 1px solid var(--cf-dark-border) !important;
+  color: var(--cf-dark-text) !important;
+}
+
+html.cf-dark-mode input[type="file"]::file-selector-button:hover {
   background: var(--cf-dark-surface-hover) !important;
 }
 
@@ -528,6 +550,12 @@ html.cf-dark-mode div.ttypography .MathJax {
   filter: invert(0.86) hue-rotate(180deg);
 }
 
+html.cf-dark-mode #MathJax_Message {
+  background: var(--cf-dark-surface-raised) !important;
+  border-color: var(--cf-dark-border) !important;
+  color: var(--cf-dark-text-muted) !important;
+}
+
 html.cf-dark-mode .spoiler-content,
 html.cf-dark-mode .roundbox.highlight-blue,
 html.cf-dark-mode .comment-table.highlight-blue,
@@ -554,6 +582,16 @@ html.cf-dark-mode .alert-error,
 html.cf-dark-mode span.error {
   background-color: #492126 !important;
   border-color: #72353d !important;
+  color: #ffc3c6 !important;
+}
+
+html.cf-dark-mode ins {
+  background: #173d29 !important;
+  color: #b9efca !important;
+}
+
+html.cf-dark-mode del {
+  background: #492126 !important;
   color: #ffc3c6 !important;
 }
 
@@ -640,8 +678,36 @@ html.cf-dark-mode a.red-link:focus {
   color: #fff !important;
 }
 
+/* The public calendar is a cross-origin Google Calendar iframe, so its inner
+   document cannot inherit this theme. Transforming the rendered frame gives
+   it a low-glare palette while preserving the calendar's colored markers. */
+html.cf-dark-mode iframe[src*="calendar.google.com/calendar/embed"] {
+  background: var(--cf-dark-surface) !important;
+  border: 1px solid var(--cf-dark-border) !important;
+  filter: invert(0.9) hue-rotate(180deg) brightness(0.78) contrast(0.9);
+}
+
+/* Profile charts draw their fills directly in canvas/SVG rather than through
+   Codeforces' normal surfaces. Tone down the large pastel rating bands and
+   replace empty activity cells with the theme's raised surface. */
+html.cf-dark-mode #usersRatingGraphPlaceholder canvas {
+  filter: brightness(0.62) saturate(0.8);
+}
+
+html.cf-dark-mode #userActivityGraph rect.day {
+  stroke: var(--cf-dark-border-soft) !important;
+}
+
+html.cf-dark-mode #userActivityGraph rect.day[fill="#EBEDF0"] {
+  fill: var(--cf-dark-surface-raised) !important;
+}
+
 html.cf-dark-mode img[src*="codeforces.com"] {
   background-color: transparent !important;
+}
+
+html.cf-dark-mode img[src*="/no-avatar.jpg"] {
+  filter: brightness(0.72) contrast(0.92);
 }
 
 html.cf-dark-mode #header > div:first-child img,

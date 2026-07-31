@@ -20,6 +20,23 @@ test("registers a feature popup and all-page dark theme", () => {
   assert.equal(allPageScript.css.includes("src/dark.css"), true);
 });
 
+test("loads problem ratings on contest and problemset tables", () => {
+  const metadataScript = manifest.content_scripts.find((entry) =>
+    entry.js.includes("src/content.js")
+  );
+
+  assert.ok(metadataScript);
+  assert.equal(
+    metadataScript.matches.includes("https://codeforces.com/contest/*"),
+    true
+  );
+  assert.equal(
+    metadataScript.matches.includes("https://codeforces.com/problemset*"),
+    true
+  );
+  assert.equal(metadataScript.css.includes("src/content.css"), true);
+});
+
 test("popup only loads packaged scripts", () => {
   const popup = fs.readFileSync(
     path.join(__dirname, "../popup/popup.html"),
@@ -85,4 +102,19 @@ test("dark theme covers contests-page custom controls and branding", () => {
   assert.match(darkTheme, /\.datatable > div:nth-of-type\(5\)/);
   assert.match(darkTheme, /a\.red-link:link/);
   assert.match(darkTheme, /filter: invert\(1\) hue-rotate\(180deg\)/);
+});
+
+test("dark theme covers site-wide embedded and inline light surfaces", () => {
+  const darkTheme = fs.readFileSync(
+    path.join(__dirname, "../src/dark.css"),
+    "utf8"
+  );
+
+  assert.match(darkTheme, /div\[style\*="background-color: white"\]/);
+  assert.match(darkTheme, /input\[type="file"\]::file-selector-button/);
+  assert.match(darkTheme, /#MathJax_Message/);
+  assert.match(darkTheme, /iframe\[src\*="calendar\.google\.com\/calendar\/embed"\]/);
+  assert.match(darkTheme, /#usersRatingGraphPlaceholder canvas/);
+  assert.match(darkTheme, /#userActivityGraph rect\.day\[fill="#EBEDF0"\]/);
+  assert.match(darkTheme, /img\[src\*="\/no-avatar\.jpg"\]/);
 });

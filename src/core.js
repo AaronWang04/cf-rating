@@ -40,6 +40,27 @@
     return null;
   }
 
+  function parseContestUrl(input) {
+    let url;
+
+    try {
+      url = new URL(input);
+    } catch {
+      return null;
+    }
+
+    const match = url.pathname.match(/^\/contest\/(\d+)\/?$/);
+    return match ? Number(match[1]) : null;
+  }
+
+  function isProblemsetUrl(input) {
+    try {
+      return /^\/problemset\/?$/.test(new URL(input).pathname);
+    } catch {
+      return false;
+    }
+  }
+
   function problemKey(contestId, index) {
     return `${contestId}:${String(index).toUpperCase()}`;
   }
@@ -150,7 +171,9 @@
     findProblemMetadata,
     findRating,
     isFreshCache,
+    isProblemsetUrl,
     isUsableCache,
+    parseContestUrl,
     parseProblemUrl,
     problemKey
   });

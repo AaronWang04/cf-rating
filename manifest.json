@@ -36,8 +36,8 @@
     },
     {
       "matches": [
-        "https://codeforces.com/contest/*/problem/*",
-        "https://codeforces.com/problemset/problem/*/*"
+        "https://codeforces.com/contest/*",
+        "https://codeforces.com/problemset*"
       ],
       "js": [
         "src/settings.js",

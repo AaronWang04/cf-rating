@@ -3,8 +3,8 @@
 A small Chrome and Firefox extension with four configurable
 Codeforces features:
 
-- **Problem rating** shows a problem's rating in its own sidebar box without
-  revealing the problem tags.
+- **Problem rating** shows ratings in contest and problemset tables and in a
+  problem's sidebar without revealing the problem tags.
 - **Problem tags** optionally shows the tags returned by the same Codeforces API
   response used for rating.
 - **Dark mode** applies a low-glare theme across Codeforces, including problem
